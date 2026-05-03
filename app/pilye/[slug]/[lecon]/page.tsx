@@ -1,23 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PILLARS } from "@/data/pillars";
-import { markLessonComplete } from "@/lib/storage";
+import { getProgress, markLessonComplete } from "@/lib/storage";
 import CelebrationOverlay from "@/components/CelebrationOverlay";
 
 export default function LessonPage({
   params,
 }: {
-  params: { slug: string; lecon: string };
+  params: Promise<{ slug: string; lecon: string }>;
 }) {
-  const pillar = PILLARS.find((p) => p.slug === params.slug);
+  const { slug, lecon } = use(params);
+  const pillar = PILLARS.find((p) => p.slug === slug);
   if (!pillar) notFound();
-  const lesson = pillar.lessons.find((l) => l.id === params.lecon);
+  const lesson = pillar.lessons.find((l) => l.id === lecon);
   if (!lesson) notFound();
 
-  const lessonIdx = pillar.lessons.findIndex((l) => l.id === params.lecon);
+  const lessonIdx = pillar.lessons.findIndex((l) => l.id === lecon);
   const nextLesson = pillar.lessons[lessonIdx + 1] ?? null;
 
   const [done, setDone] = useState(false);
@@ -25,21 +26,18 @@ export default function LessonPage({
   const [celebrateMsg, setCelebrateMsg] = useState("");
 
   useEffect(() => {
-    // Check if already completed
-    const { getProgress } = require("@/lib/storage");
     const p = getProgress();
-    setDone(p.pillars[params.slug]?.lessonsCompleted.includes(params.lecon) ?? false);
-  }, [params.slug, params.lecon]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot client-only sync
+    setDone(p.pillars[slug]?.lessonsCompleted.includes(lecon) ?? false);
+  }, [slug, lecon]);
 
   const handleComplete = () => {
-    markLessonComplete(params.slug, params.lecon);
+    markLessonComplete(slug, lecon);
     setDone(true);
 
-    // Check pillar completion
-    const { getProgress } = require("@/lib/storage");
     const p = getProgress();
     const total = pillar.lessons.length;
-    const completed = p.pillars[params.slug]?.lessonsCompleted.length ?? 0;
+    const completed = p.pillars[slug]?.lessonsCompleted.length ?? 0;
     if (completed >= total) {
       setCelebrateMsg(
         `Brav! Ou fini Pilye ${pillar.number}: ${pillar.title}! 🌟`
@@ -59,7 +57,7 @@ export default function LessonPage({
       <div className="max-w-lg mx-auto px-4 py-6">
         {/* Nav */}
         <Link
-          href={`/pilye/${params.slug}`}
+          href={`/pilye/${slug}`}
           className="text-text-muted font-serif text-sm hover:text-navy flex items-center gap-1 mb-4"
         >
           ← {pillar.title}
@@ -103,7 +101,7 @@ export default function LessonPage({
               {lesson.quote.transliteration}
             </p>
             <p className="text-gold font-serif text-sm leading-relaxed">
-              "{lesson.quote.creole}"
+              &ldquo;{lesson.quote.creole}&rdquo;
             </p>
             <p className="text-cream/40 text-xs font-serif mt-2">— {lesson.quote.source}</p>
           </div>
@@ -143,14 +141,14 @@ export default function LessonPage({
             </div>
             {nextLesson ? (
               <Link
-                href={`/pilye/${params.slug}/${nextLesson.id}`}
+                href={`/pilye/${slug}/${nextLesson.id}`}
                 className="block bg-navy text-gold font-serif font-bold py-4 rounded-2xl text-center hover:bg-navy-light transition-colors"
               >
                 Leson Swivan → {nextLesson.title}
               </Link>
             ) : (
               <Link
-                href={`/quiz/${params.slug}`}
+                href={`/quiz/${slug}`}
                 className="block bg-gold text-navy font-serif font-bold py-4 rounded-2xl text-center hover:bg-gold-light transition-colors"
               >
                 🎯 Pran Quiz Pilye {pillar.number}

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Brand palette (constant identity colors) */
   --color-cream: #F7F5F0;
   --color-cream-dark: #EDE8E0;
   --color-cream-border: #DDD5C5;
@@ -17,41 +18,120 @@
   --color-text-secondary: #5A4A3A;
   --color-text-muted: #8A7A6A;
 
+  /* Semantic UI tokens (shift in dark mode via :root overrides below) */
+  --color-bg: var(--ll-bg);
+  --color-surface: var(--ll-surface);
+  --color-surface-2: var(--ll-surface-2);
+  --color-fg: var(--ll-fg);
+  --color-fg-muted: var(--ll-fg-muted);
+  --color-border: var(--ll-border);
+  --color-info: #3A6FB0;
+  --color-success: #2A6A3A;
+  --color-warning: #B17A1F;
+  --color-error: #A23A2E;
+
+  /* Typography */
   --font-serif: "Georgia", "Times New Roman", serif;
   --font-arabic: "Amiri", "Traditional Arabic", "Arial Unicode MS", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Type scale (8pt-ish) */
+  --text-2xs: 0.6875rem;   /* 11 */
+  --text-xs:  0.75rem;     /* 12 */
+  --text-sm:  0.875rem;    /* 14 */
+  --text-base: 1rem;       /* 16 */
+  --text-lg:  1.125rem;    /* 18 */
+  --text-xl:  1.375rem;    /* 22 */
+  --text-2xl: 1.75rem;     /* 28 */
+  --text-3xl: 2.25rem;     /* 36 */
+
+  /* Spacing scale (4px base) */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 400ms;
+  --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* Light theme (default) */
 :root {
-  --background: #F7F5F0;
-  --foreground: #1A1A2E;
+  --ll-bg:        #F7F5F0;
+  --ll-surface:   #FFFFFF;
+  --ll-surface-2: #EDE8E0;
+  --ll-fg:        #1A1A2E;
+  --ll-fg-muted:  #8A7A6A;
+  --ll-border:    #DDD5C5;
+
+  --background: var(--ll-bg);
+  --foreground: var(--ll-fg);
 }
 
+/* Dark theme — applied when OS prefers dark, or when [data-theme="dark"] is set on <html> */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #F7F5F0;
-    --foreground: #1A1A2E;
+  :root:not([data-theme="light"]) {
+    --ll-bg:        #0F1A2A;
+    --ll-surface:   #1A2740;
+    --ll-surface-2: #14202F;
+    --ll-fg:        #F7F5F0;
+    --ll-fg-muted:  #B5A691;
+    --ll-border:    #2A3F5A;
   }
 }
 
+:root[data-theme="dark"] {
+  --ll-bg:        #0F1A2A;
+  --ll-surface:   #1A2740;
+  --ll-surface-2: #14202F;
+  --ll-fg:        #F7F5F0;
+  --ll-fg-muted:  #B5A691;
+  --ll-border:    #2A3F5A;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Georgia, "Times New Roman", serif;
+  background: var(--ll-bg);
+  color: var(--ll-fg);
+  font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
+  transition: background-color var(--motion-base) var(--easing),
+              color var(--motion-base) var(--easing);
 }
 
 /* Arabic text rendering */
 .arabic {
-  font-family: "Amiri", "Traditional Arabic", "Arial Unicode MS", "Scheherazade New", serif;
+  font-family: var(--font-arabic);
   direction: rtl;
   text-align: right;
   line-height: 2;
   unicode-bidi: bidi-override;
 }
 
-/* Smooth page feel */
+/* Tap highlight off for native feel */
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus ring (keyboard users get a visible ring) */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* Scrollbar */
@@ -59,9 +139,33 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #EDE8E0;
+  background: var(--ll-surface-2);
 }
 ::-webkit-scrollbar-thumb {
-  background: #C19A4D;
+  background: var(--color-gold);
   border-radius: 3px;
+}
+
+/* In dark mode, swap the "white card" surface used across the app */
+:root[data-theme="dark"] .bg-white {
+  background-color: var(--ll-surface) !important;
+  color: var(--ll-fg);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bg-white {
+    background-color: var(--ll-surface) !important;
+    color: var(--ll-fg);
+  }
+}
+
+/* Honor reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

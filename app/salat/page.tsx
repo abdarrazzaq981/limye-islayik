@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SALAT_POSITIONS } from "@/data/wudu-steps";
+import { SalatStepIllustration } from "@/components/illustrations/SalatStepIllustration";
+import { Callout } from "@/components/ui/Callout";
 
 const PRAYER_TIMES = [
   { name: "Fajr", icon: "🌅", time: "Anvan solèy leve", rakah: "2 rak'ah" },
@@ -114,8 +116,8 @@ export default function SalatPage() {
 
           {/* Step card */}
           <div className="bg-navy rounded-2xl overflow-hidden mb-4">
-            <div className="bg-navy-dark flex items-center justify-center py-8">
-              <SalatSVG stepId={step.id} />
+            <div className="bg-navy-dark flex items-center justify-center py-8 text-gold">
+              <SalatStepIllustration positionId={step.id} ariaLabel={step.name} />
             </div>
             <div className="p-5">
               <p className="text-gold text-xs font-bold uppercase tracking-wide mb-1">
@@ -130,19 +132,16 @@ export default function SalatPage() {
                 <div className="mt-4 bg-black/20 rounded-xl p-3">
                   <p className="arabic text-cream text-xl">{step.arabic}</p>
                   <p className="text-cream/50 text-xs font-serif italic mt-1">{step.transliteration}</p>
-                  <p className="text-gold text-xs font-serif mt-1">"{step.creoleText}"</p>
+                  <p className="text-gold text-xs font-serif mt-1">&ldquo;{step.creoleText}&rdquo;</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Poukisa */}
-          <div className="bg-amber-50 border-l-4 border-gold rounded-r-xl p-4 mb-4">
-            <p className="text-xs text-gold-muted font-bold uppercase tracking-wide mb-1.5">
-              💡 Poukisa?
-            </p>
-            <p className="font-serif text-text-secondary text-sm leading-relaxed">{step.poukisa}</p>
-          </div>
+          <Callout tone="warning" title="Poukisa?" className="mb-4">
+            {step.poukisa}
+          </Callout>
 
           {/* Nav */}
           <div className="flex gap-3">
@@ -173,18 +172,4 @@ export default function SalatPage() {
       )}
     </div>
   );
-}
-
-function SalatSVG({ stepId }: { stepId: number }) {
-  const svgs: Record<number, React.ReactNode> = {
-    1: <span className="text-6xl">🙋</span>,
-    2: <span className="text-6xl">🧎</span>,
-    3: <span className="text-6xl">🙇</span>,
-    4: <span className="text-6xl">🙆</span>,
-    5: <span className="text-6xl">🙏</span>,
-    6: <span className="text-6xl">🧘</span>,
-    7: <span className="text-6xl">🤲</span>,
-    8: <span className="text-6xl">👋</span>,
-  };
-  return <>{svgs[stepId] ?? <span className="text-6xl">🕌</span>}</>;
 }

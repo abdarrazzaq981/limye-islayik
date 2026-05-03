@@ -5,6 +5,8 @@ import Link from "next/link";
 import { PILLARS } from "@/data/pillars";
 import { getProgress } from "@/lib/storage";
 import { getPillarCompletionPercent, getNextLesson } from "@/lib/progress";
+import { readinessScore, readinessMessage } from "@/lib/mastery";
+import { useProgress } from "@/lib/use-progress";
 import ProgressRing from "@/components/ProgressRing";
 
 const RING_COLORS: Record<string, string> = {
@@ -20,6 +22,7 @@ const MOTIVATIONAL = [
 ];
 
 export default function Dashboard() {
+  const progress = useProgress();
   const [percents, setPercents] = useState<Record<string, number>>({});
   const [streak, setStreak] = useState(0);
   const [nextLesson, setNextLesson] = useState<{ pillarSlug: string; lessonId: string } | null>(null);
@@ -30,10 +33,15 @@ export default function Dashboard() {
     PILLARS.forEach((pillar) => {
       p[pillar.slug] = getPillarCompletionPercent(pillar.slug);
     });
+    /* eslint-disable react-hooks/set-state-in-effect -- derived snapshot when progress changes */
     setPercents(p);
     setStreak(getProgress().streak);
     setNextLesson(getNextLesson());
-  }, []);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [progress]);
+
+  const readiness = readinessScore(progress);
+  const openMistakes = progress.mistakeJournal.filter((m) => !m.resolved).length;
 
   const nextPillar = nextLesson
     ? PILLARS.find((p) => p.slug === nextLesson.pillarSlug)
@@ -42,15 +50,44 @@ export default function Dashboard() {
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
       {/* Header */}
-      <div className="text-center mb-6">
-        <p className="text-gold font-serif text-2xl tracking-widest">☪</p>
-        <h1 className="text-2xl font-serif font-bold text-navy mt-1 tracking-wide">
-          LIMYÈ ISLAYIK
-        </h1>
-        <p className="text-text-muted text-xs font-serif mt-1 tracking-wide">
-          Limyè pou tout Ayisyen k ap aprann Islam
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex-1 text-center">
+          <p className="text-gold font-serif text-2xl tracking-widest">☪</p>
+          <h1 className="text-2xl font-serif font-bold text-navy mt-1 tracking-wide">
+            LIMYÈ ISLAYIK
+          </h1>
+          <p className="text-text-muted text-xs font-serif mt-1 tracking-wide">
+            Limyè pou tout Ayisyen k ap aprann Islam
+          </p>
+        </div>
+        <Link
+          href="/parametr"
+          aria-label="Paramèt"
+          className="text-text-muted hover:text-navy text-xl"
+        >
+          ⚙
+        </Link>
       </div>
+
+      {/* Readiness widget */}
+      {readiness > 0 && (
+        <div className="bg-white border border-cream-border rounded-2xl p-4 mb-5 flex items-center gap-4">
+          <div className="relative shrink-0">
+            <ProgressRing percent={readiness} size={56} strokeWidth={4} color="#C19A4D" />
+            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-navy">
+              {readiness}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-gold font-bold uppercase tracking-wide">
+              Nivo prepatasyon ou
+            </p>
+            <p className="font-serif text-text-secondary text-sm leading-snug mt-0.5">
+              {readinessMessage(readiness)}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Streak */}
       {streak > 0 && (
@@ -141,7 +178,35 @@ export default function Dashboard() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        <Link
+          href="/aprann"
+          className="bg-white border border-cream-border rounded-xl p-3 text-center hover:border-gold transition-colors"
+        >
+          <p className="text-xl">📚</p>
+          <p className="text-xs font-serif text-navy mt-1">Aprann</p>
+        </Link>
+        <Link
+          href="/sourates"
+          className="bg-white border border-cream-border rounded-xl p-3 text-center hover:border-gold transition-colors"
+        >
+          <p className="text-xl">📖</p>
+          <p className="text-xs font-serif text-navy mt-1">Sourate</p>
+        </Link>
+        <Link
+          href="/revize"
+          className="bg-white border border-cream-border rounded-xl p-3 text-center hover:border-gold transition-colors relative"
+        >
+          <p className="text-xl">🔁</p>
+          <p className="text-xs font-serif text-navy mt-1">Revize</p>
+          {openMistakes > 0 && (
+            <span className="absolute top-1 right-1 bg-gold text-navy text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {openMistakes}
+            </span>
+          )}
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         <Link
           href="/wudu"
           className="bg-white border border-cream-border rounded-xl p-3 text-center hover:border-gold transition-colors"
@@ -155,13 +220,6 @@ export default function Dashboard() {
         >
           <p className="text-xl">🕌</p>
           <p className="text-xs font-serif text-navy mt-1">Gid Priyè</p>
-        </Link>
-        <Link
-          href="/sourates"
-          className="bg-white border border-cream-border rounded-xl p-3 text-center hover:border-gold transition-colors"
-        >
-          <p className="text-xl">📖</p>
-          <p className="text-xs font-serif text-navy mt-1">Sourate</p>
         </Link>
       </div>
     </div>

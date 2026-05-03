@@ -5,7 +5,16 @@ import Link from "next/link";
 import { PILLARS } from "@/data/pillars";
 import { getProgress } from "@/lib/storage";
 import { getPillarCompletionPercent, getOverallPercent } from "@/lib/progress";
+import {
+  readinessScore,
+  readinessMessage,
+  weakestPillar,
+  topMistakeType,
+  mistakeTypeLabels,
+} from "@/lib/mastery";
+import { useProgress } from "@/lib/use-progress";
 import ProgressRing from "@/components/ProgressRing";
+import { Callout } from "@/components/ui/Callout";
 
 const BADGES = [
   { slug: "sa-islam-ye", label: "Fondasyon", icon: "🌱", description: "Fini Pilye 1: Sa Islam Ye" },
@@ -17,6 +26,7 @@ const BADGES = [
 ];
 
 export default function PwogresPage() {
+  const progress = useProgress();
   const [percents, setPercents] = useState<Record<string, number>>({});
   const [earnedBadges, setEarnedBadges] = useState<string[]>([]);
   const [streak, setStreak] = useState(0);
@@ -24,7 +34,6 @@ export default function PwogresPage() {
   const [totalLessons, setTotalLessons] = useState(0);
 
   useEffect(() => {
-    const progress = getProgress();
     const p: Record<string, number> = {};
     const earned: string[] = [];
     PILLARS.forEach((pillar) => {
@@ -32,12 +41,18 @@ export default function PwogresPage() {
       p[pillar.slug] = pct;
       if (pct === 100) earned.push(pillar.slug);
     });
+    /* eslint-disable react-hooks/set-state-in-effect -- derived snapshot once per progress change */
     setPercents(p);
     setEarnedBadges(earned);
-    setStreak(progress.streak);
+    setStreak(getProgress().streak);
     setOverall(getOverallPercent());
-    setTotalLessons(progress.totalLessonsCompleted);
-  }, []);
+    setTotalLessons(getProgress().totalLessonsCompleted);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [progress]);
+
+  const readiness = readinessScore(progress);
+  const weakest = weakestPillar(progress);
+  const topMistake = topMistakeType(progress);
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
@@ -46,6 +61,39 @@ export default function PwogresPage() {
       </Link>
 
       <h1 className="font-serif text-2xl font-bold text-navy mb-5">Pwogre ou</h1>
+
+      {/* Readiness */}
+      {readiness > 0 && (
+        <div className="bg-white border border-cream-border rounded-2xl p-4 mb-4 flex items-center gap-4">
+          <div className="relative shrink-0">
+            <ProgressRing percent={readiness} size={64} strokeWidth={5} color="#1F4D3A" />
+            <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-navy">
+              {readiness}
+            </span>
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-green font-bold uppercase tracking-wide">
+              Nivo prepatasyon
+            </p>
+            <p className="font-serif text-text-secondary text-sm leading-snug mt-1">
+              {readinessMessage(readiness)}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {weakest && weakest.questionsSeen > 0 && (
+        <Callout tone="warning" title={`Pi gwo feblès: ${weakest.title}`} className="mb-4">
+          {weakest.accuracy}% repons kòrèk · {weakest.questionsMastered}/{weakest.questionsSeen} mèt.
+          Eseye pratike ankò pou amelyore l.
+        </Callout>
+      )}
+
+      {topMistake && (
+        <Callout tone="info" title="Erè ki repete" className="mb-4">
+          Gade kijan ou ka chanje sa: <strong>{mistakeTypeLabels[topMistake]}</strong>.
+        </Callout>
+      )}
 
       {/* Overall */}
       <div className="bg-navy rounded-2xl p-5 mb-5 flex items-center gap-5">

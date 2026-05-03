@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PILLARS } from "@/data/pillars";
@@ -14,8 +14,13 @@ const RING_COLORS: Record<string, string> = {
   gold: "#C19A4D",
 };
 
-export default function PillarPage({ params }: { params: { slug: string } }) {
-  const pillar = PILLARS.find((p) => p.slug === params.slug);
+export default function PillarPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = use(params);
+  const pillar = PILLARS.find((p) => p.slug === slug);
   if (!pillar) notFound();
 
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -23,9 +28,11 @@ export default function PillarPage({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     const progress = getProgress();
-    setCompletedLessons(progress.pillars[params.slug]?.lessonsCompleted ?? []);
-    setPercent(getPillarCompletionPercent(params.slug));
-  }, [params.slug]);
+    /* eslint-disable react-hooks/set-state-in-effect -- one-shot client-only sync */
+    setCompletedLessons(progress.pillars[slug]?.lessonsCompleted ?? []);
+    setPercent(getPillarCompletionPercent(slug));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [slug]);
 
   const ringColor = RING_COLORS[pillar.color] ?? "#C19A4D";
 
@@ -60,41 +67,70 @@ export default function PillarPage({ params }: { params: { slug: string } }) {
         </p>
       </div>
 
-      {/* Lessons */}
-      <h2 className="font-serif text-navy font-bold text-sm uppercase tracking-wide mb-3">
-        Leson yo
-      </h2>
-      <div className="space-y-2 mb-6">
-        {pillar.lessons.map((lesson, idx) => {
-          const done = completedLessons.includes(lesson.id);
-          return (
-            <Link
-              key={lesson.id}
-              href={`/pilye/${pillar.slug}/${lesson.id}`}
-              className={`flex items-center gap-3 p-4 rounded-xl border transition-colors ${
-                done
-                  ? "bg-green/5 border-green/30"
-                  : "bg-white border-cream-border hover:border-gold"
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                  done ? "bg-green text-white" : "bg-cream-dark text-navy"
-                }`}
-              >
-                {done ? "✓" : idx + 1}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-serif font-bold text-navy text-sm">{lesson.title}</p>
-                {lesson.subtitle && (
-                  <p className="text-xs text-text-muted font-serif mt-0.5">{lesson.subtitle}</p>
-                )}
-              </div>
-              <span className="text-text-muted text-sm">→</span>
-            </Link>
-          );
-        })}
-      </div>
+      {/* Lessons grouped by level (defaults to level 1 when unset) */}
+      {(() => {
+        const LEVEL_TITLES: Record<number, string> = {
+          1: "Nivo 1 · Fondasyon",
+          2: "Nivo 2 · Règ debaz",
+          3: "Nivo 3 · Rekonèt",
+          4: "Nivo 4 · Aplikasyon",
+          5: "Nivo 5 · Mèt rasin",
+        };
+        const groups = new Map<number, typeof pillar.lessons>();
+        pillar.lessons.forEach((l) => {
+          const lvl = l.level ?? 1;
+          if (!groups.has(lvl)) groups.set(lvl, []);
+          groups.get(lvl)!.push(l);
+        });
+        const ordered = Array.from(groups.entries()).sort(([a], [b]) => a - b);
+        const lessonOrder = new Map(
+          ordered.flatMap(([, ls]) => ls).map((l, i) => [l.id, i + 1])
+        );
+        return ordered.map(([lvl, lessons]) => (
+          <div key={lvl} className="mb-6">
+            <h2 className="font-serif text-navy font-bold text-sm uppercase tracking-wide mb-3">
+              {LEVEL_TITLES[lvl] ?? `Nivo ${lvl}`}
+            </h2>
+            <div className="space-y-2">
+              {lessons.map((lesson) => {
+                const orderNum = lessonOrder.get(lesson.id) ?? 0;
+                const done = completedLessons.includes(lesson.id);
+                return (
+                  <Link
+                    key={lesson.id}
+                    href={`/pilye/${pillar.slug}/${lesson.id}`}
+                    className={`flex items-center gap-3 p-4 rounded-xl border transition-colors ${
+                      done
+                        ? "bg-green/5 border-green/30"
+                        : "bg-white border-cream-border hover:border-gold"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                        done ? "bg-green text-white" : "bg-cream-dark text-navy"
+                      }`}
+                    >
+                      {done ? "✓" : orderNum}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-serif font-bold text-navy text-sm">{lesson.title}</p>
+                      {lesson.subtitle && (
+                        <p className="text-xs text-text-muted font-serif mt-0.5">{lesson.subtitle}</p>
+                      )}
+                      {lesson.section && (
+                        <p className="text-[10px] text-gold font-serif uppercase tracking-wide mt-0.5">
+                          {lesson.section}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-text-muted text-sm">→</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ));
+      })()}
 
       {/* Quiz link */}
       {pillar.quiz.length > 0 && (

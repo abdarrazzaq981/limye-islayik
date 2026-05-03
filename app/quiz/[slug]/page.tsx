@@ -1,40 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PILLARS } from "@/data/pillars";
-import { saveQuizScore } from "@/lib/storage";
+import { recordQuestionAttempt, saveQuizScore } from "@/lib/storage";
+import type { Confidence, MistakeType } from "@/lib/storage";
 import QuizQuestion from "@/components/QuizQuestion";
 import CelebrationOverlay from "@/components/CelebrationOverlay";
+import { ConfidencePrompt } from "@/components/ConfidencePrompt";
+import { MistakeTypePrompt } from "@/components/MistakeTypePrompt";
 
-export default function QuizPage({ params }: { params: { slug: string } }) {
-  const pillar = PILLARS.find((p) => p.slug === params.slug);
+export default function QuizPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = use(params);
+  const pillar = PILLARS.find((p) => p.slug === slug);
   if (!pillar || pillar.quiz.length === 0) notFound();
+
+  type Phase = "answering" | "confidence" | "mistake" | "ready";
 
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<boolean[]>([]);
-  const [answered, setAnswered] = useState(false);
+  const [phase, setPhase] = useState<Phase>("answering");
+  const [pendingAttempt, setPendingAttempt] = useState<{
+    correct: boolean;
+    selectedIdx: number;
+    confidence: Confidence | null;
+    mistakeType: MistakeType | null;
+  } | null>(null);
   const [celebrate, setCelebrate] = useState(false);
   const [finished, setFinished] = useState(false);
 
   const question = pillar.quiz[idx];
   const isLast = idx === pillar.quiz.length - 1;
 
-  const handleAnswer = (correct: boolean) => {
+  const handleAnswer = (correct: boolean, selectedIdx: number) => {
     setAnswers((a) => [...a, correct]);
-    setAnswered(true);
+    setPendingAttempt({ correct, selectedIdx, confidence: null, mistakeType: null });
+    setPhase("confidence");
+  };
+
+  const handleConfidence = (confidence: Confidence) => {
+    if (!pendingAttempt) return;
+    const next = { ...pendingAttempt, confidence };
+    setPendingAttempt(next);
+    if (!next.correct) {
+      setPhase("mistake");
+    } else {
+      commitAttempt(next);
+      setPhase("ready");
+    }
+  };
+
+  const handleMistake = (mistakeType: MistakeType | null) => {
+    if (!pendingAttempt) return;
+    const next = { ...pendingAttempt, mistakeType };
+    commitAttempt(next);
+    setPhase("ready");
+  };
+
+  const commitAttempt = (attempt: NonNullable<typeof pendingAttempt>) => {
+    recordQuestionAttempt({
+      questionId: `${slug}:${idx}`,
+      pillarSlug: slug,
+      correct: attempt.correct,
+      confidence: attempt.confidence,
+      mistakeType: attempt.mistakeType,
+      mode: "practice",
+      userAnswerIndex: attempt.selectedIdx,
+      correctAnswerIndex: question.correct,
+    });
   };
 
   const handleNext = () => {
     if (isLast) {
-      const score = Math.round(((answers.filter(Boolean).length + (answered ? 1 : 0)) / pillar.quiz.length) * 100);
-      saveQuizScore(params.slug, "main", score);
+      const correctCount = answers.filter(Boolean).length;
+      const score = Math.round((correctCount / pillar.quiz.length) * 100);
+      saveQuizScore(slug, "main", score);
       if (score >= 80) setCelebrate(true);
       setFinished(true);
     } else {
       setIdx((i) => i + 1);
-      setAnswered(false);
+      setPhase("answering");
+      setPendingAttempt(null);
     }
   };
 
@@ -72,7 +123,7 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
 
           <div className="space-y-3">
             <Link
-              href={`/pilye/${params.slug}`}
+              href={`/pilye/${slug}`}
               className="block bg-navy text-gold font-serif font-bold py-4 rounded-2xl text-center hover:bg-navy-light transition-colors"
             >
               ← Retounen nan {pillar.title}
@@ -81,7 +132,8 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
               onClick={() => {
                 setIdx(0);
                 setAnswers([]);
-                setAnswered(false);
+                setPhase("answering");
+                setPendingAttempt(null);
                 setFinished(false);
                 setCelebrate(false);
               }}
@@ -98,7 +150,7 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
       <Link
-        href={`/pilye/${params.slug}`}
+        href={`/pilye/${slug}`}
         className="text-text-muted font-serif text-sm hover:text-navy flex items-center gap-1 mb-4"
       >
         ← {pillar.title}
@@ -126,7 +178,16 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
 
       <QuizQuestion question={question} onAnswer={handleAnswer} />
 
-      {answered && (
+      {phase === "confidence" && <ConfidencePrompt onSelect={handleConfidence} />}
+
+      {phase === "mistake" && (
+        <MistakeTypePrompt
+          onSelect={handleMistake}
+          onSkip={() => handleMistake(null)}
+        />
+      )}
+
+      {phase === "ready" && (
         <button
           onClick={handleNext}
           className="w-full mt-5 bg-navy text-gold font-serif font-bold py-4 rounded-2xl hover:bg-navy-light transition-colors"

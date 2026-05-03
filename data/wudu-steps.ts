@@ -20,7 +20,7 @@ export const WUDU_STEPS: WuduStep[] = [
     creoleDua: "Nan non Allah",
     poukisa: "Entansyon diferansye adorasyon de aksyon òdinè. Bismillah kòmanse tout bagay avèk non Allah.",
     times: 1,
-    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Wudu_1.jpg/320px-Wudu_1.jpg",
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/A_Muslim_man_performs_ablution_%28wudu%29_during_the_holy_month_of_Ramadan.jpg/500px-A_Muslim_man_performs_ablution_%28wudu%29_during_the_holy_month_of_Ramadan.jpg",
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Lave de pla men ou twa fwa — pwenti dwèt rive nan pwenyèt. Kòmanse ak men dwat.",
     poukisa: "Men yo se premye pati kò nou ki touche lemonn. Netwaye yo an premye montre ou pare pou pwopte.",
     times: 3,
-    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Wudu_wash_hands.jpg/320px-Wudu_wash_hands.jpg",
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/A_Man_Performing_His_Ablutions_%2812966553463%29.jpg/500px-A_Man_Performing_His_Ablutions_%2812966553463%29.jpg",
   },
   {
     id: 3,
@@ -36,6 +36,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Pran dlo nan men dwat ou, rense bouch ou twa fwa. Netwaye dan ou avèk lang ou.",
     poukisa: "Bouch nou fè dhikr (souvni Allah). Netwaye l pou pawòl ki soti la yo pwòp.",
     times: 3,
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Performing_Ablution_%28Wudu%29_During_Ramadan.jpg/500px-Performing_Ablution_%28Wudu%29_During_Ramadan.jpg",
   },
   {
     id: 4,
@@ -43,6 +44,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Aspire yon ti dlo nan nen ou ak men dwat, epi soufle l deyò ak men gòch. Fè sa twa fwa.",
     poukisa: "Nen an pran souf lavi — netwaye l se senbòl pwopte entèn ak ekstèn.",
     times: 3,
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Performing_Ablution_%28Wudu%29_During_Ramadan.jpg/500px-Performing_Ablution_%28Wudu%29_During_Ramadan.jpg",
   },
   {
     id: 5,
@@ -50,7 +52,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Lave tout figi ou twa fwa — depi frèt sèvèl rive anba manton, depi zòrèy a zòrèy. Si ou gen bab, pase dlo ladan l.",
     poukisa: "Figi se pati kò nou lòt moun wè pi plis. Netwaye l montre ou prezante pwòp devan Allah.",
     times: 3,
-    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Wudu_face.jpg/320px-Wudu_face.jpg",
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/A_Muslim_man_performs_ablution_%28wudu%29_during_the_holy_month_of_Ramadan.jpg/500px-A_Muslim_man_performs_ablution_%28wudu%29_during_the_holy_month_of_Ramadan.jpg",
   },
   {
     id: 6,
@@ -58,7 +60,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Lave bra dwat ou twa fwa — depi pwenti dwèt rive nan koud (enkli). Epi fè menm bagay pou bra gòch la.",
     poukisa: "Bra nou travay pou nou. Netwaye yo symbolize pwopte nan travay nou fè.",
     times: 3,
-    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Wudu_arm.jpg/320px-Wudu_arm.jpg",
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/A_Man_Performing_His_Ablutions_%2812966553463%29.jpg/500px-A_Man_Performing_His_Ablutions_%2812966553463%29.jpg",
   },
   {
     id: 7,
@@ -66,7 +68,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Mouye de pla men ou epi pase yo sou tout tèt ou — depi devan rive dèyè — yon sèl fwa.",
     poukisa: "Tèt la gen sèvo nou, panse nou. Touche l nan wudu sonje nou ke nou bezwen gidans Allah.",
     times: 1,
-    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Wudu_head.jpg/320px-Wudu_head.jpg",
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Performing_Ablution_%28Wudu%29_During_Ramadan.jpg/500px-Performing_Ablution_%28Wudu%29_During_Ramadan.jpg",
   },
   {
     id: 8,
@@ -74,6 +76,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Avèk menm dlo sou men ou, pase pous ou nan zòrèy ou ak pòs endèks ou dèyè zòrèy ou. Yon fwa sèlman.",
     poukisa: "Zòrèy tande pawòl. Netwaye yo se senbòl pou koute verite ak sagès.",
     times: 1,
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/A_Man_Performing_His_Ablutions_%2812966553463%29.jpg/500px-A_Man_Performing_His_Ablutions_%2812966553463%29.jpg",
   },
   {
     id: 9,
@@ -81,7 +84,7 @@ export const WUDU_STEPS: WuduStep[] = [
     instruction: "Lave pye dwat ou twa fwa — depi pwenti dwèt rive nan cheviy (enkli). Epi fè menm bagay pou pye gòch. Asire dlo pase ant dwèt yo.",
     poukisa: "Pye nou pote nou nan tout direksyon. Netwaye yo pou tout kote ou ale, ou ale avèk pwopte.",
     times: 3,
-    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Wudu_feet.jpg/320px-Wudu_feet.jpg",
+    wikimediaPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/A_Muslim_man_performs_ablution_%28wudu%29_during_the_holy_month_of_Ramadan.jpg/500px-A_Muslim_man_performs_ablution_%28wudu%29_during_the_holy_month_of_Ramadan.jpg",
   },
 ];
 

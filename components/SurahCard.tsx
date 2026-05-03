@@ -10,14 +10,20 @@ interface Props {
 }
 
 export default function SurahCard({ surah, expanded = false }: Props) {
-  const [open, setOpen] = useState(expanded);
+  const isStub = surah.status === "stub";
+  const [open, setOpen] = useState(expanded && !isStub);
   const [tab, setTab] = useState<"tradiksyon" | "istwa" | "kijan">("tradiksyon");
 
   return (
-    <div className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-sm">
+    <div
+      className={`bg-white rounded-2xl border border-cream-border overflow-hidden shadow-sm ${
+        isStub ? "opacity-70" : ""
+      }`}
+    >
       {/* Header */}
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => !isStub && setOpen((o) => !o)}
+        disabled={isStub}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
         <div className="flex items-center gap-3">
@@ -33,11 +39,17 @@ export default function SurahCard({ surah, expanded = false }: Props) {
         </div>
         <div className="flex items-center gap-2">
           <span className="arabic text-navy text-lg">{surah.nameArabic}</span>
-          <span className="text-text-muted text-sm">{open ? "▲" : "▼"}</span>
+          {isStub ? (
+            <span className="text-text-muted text-[10px] font-serif italic uppercase tracking-wide">
+              Pa fini
+            </span>
+          ) : (
+            <span className="text-text-muted text-sm">{open ? "▲" : "▼"}</span>
+          )}
         </div>
       </button>
 
-      {open && (
+      {open && !isStub && (
         <div>
           {/* Arabic text */}
           <div className="bg-navy px-5 py-6">
@@ -87,12 +99,15 @@ export default function SurahCard({ surah, expanded = false }: Props) {
           </div>
 
           {/* Actions */}
+          {/* TODO: per-surah quizzes don't exist yet; link to pillar-level Koran quiz.
+              When per-surah quizzes are authored, route to /quiz/koran?surah=${surah.slug}
+              and have the quiz route honor that param. See docs/limye-islayik-master-prompt.md §6. */}
           <div className="flex gap-2 px-5 pb-4">
             <Link
-              href={`/quiz/koran?surah=${surah.slug}`}
+              href="/quiz/koran"
               className="flex-1 text-center py-2.5 bg-navy text-gold font-serif text-sm font-bold rounded-xl"
             >
-              🎯 Pratike
+              🎯 Pratike Koran
             </Link>
           </div>
         </div>

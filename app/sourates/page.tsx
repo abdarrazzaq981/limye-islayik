@@ -18,7 +18,7 @@ export default function SouratesPage() {
 
       <div className="bg-navy rounded-2xl p-4 mb-5 text-center">
         <p className="text-gold font-serif text-sm leading-relaxed">
-          "Mèyè nan nou se moun ki aprann Koran epi anseye li."
+          &ldquo;Mèyè nan nou se moun ki aprann Koran epi anseye li.&rdquo;
         </p>
         <p className="text-cream/40 text-xs font-serif mt-2">— Pwofèt Muhammad ﷺ</p>
       </div>

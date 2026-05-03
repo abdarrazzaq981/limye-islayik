@@ -6,7 +6,14 @@ export interface Lesson {
   poukisa?: string; // "Why" spiritual meaning callout
   keyTerms?: { term: string; definition: string }[];
   quote?: { arabic: string; transliteration: string; creole: string; source: string };
+  /** Pillar-relative level (1=foundations … 5=mastery). Defaults to 1 if absent. */
+  level?: 1 | 2 | 3 | 4 | 5;
+  /** Section title within the level — used for grouping in /aprann and mastery tracking. */
+  section?: string;
 }
+
+// EXPAND: existing lessons default to level 1; assign level/section as content is authored
+//         per docs/limye-islayik-master-prompt.md §4.
 
 export interface QuizQuestion {
   id: string;

@@ -11,23 +11,29 @@ const ENCOURAGEMENTS_WRONG = [
 
 interface Props {
   question: Q;
-  onAnswer: (correct: boolean) => void;
+  onAnswer: (correct: boolean, selectedIdx: number) => void;
 }
 
 export default function QuizQuestion({ question, onAnswer }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const [wrongMsg, setWrongMsg] = useState(ENCOURAGEMENTS_WRONG[0]);
 
   const handleSelect = (idx: number) => {
     if (revealed) return;
     setSelected(idx);
     setRevealed(true);
-    onAnswer(idx === question.correct);
+    if (idx !== question.correct) {
+      const pickIdx = Math.floor(
+        // eslint-disable-next-line react-hooks/purity -- variety in encouragement copy is fine in event handler
+        Math.random() * ENCOURAGEMENTS_WRONG.length
+      );
+      setWrongMsg(ENCOURAGEMENTS_WRONG[pickIdx]);
+    }
+    onAnswer(idx === question.correct, idx);
   };
 
   const isCorrect = selected === question.correct;
-  const wrongMsg =
-    ENCOURAGEMENTS_WRONG[Math.floor(Math.random() * ENCOURAGEMENTS_WRONG.length)];
 
   return (
     <div className="space-y-4">
