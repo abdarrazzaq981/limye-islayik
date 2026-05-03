@@ -91,17 +91,17 @@ export default function ParametrPage() {
           <div className="px-5 py-4">
             <p className="font-serif font-bold text-navy mb-3">Tèm</p>
             <div className="flex gap-2">
-              {(["auto", "light", "dark"] as const).map((t) => (
+              {(["light", "dark"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => applyTheme(t)}
                   className={`flex-1 py-2 rounded-xl border text-sm font-serif font-bold transition-colors ${
-                    theme === t
+                    (theme === t || (theme === "auto" && t === "light"))
                       ? "bg-navy text-gold border-navy"
                       : "bg-cream-dark border-cream-border text-navy hover:border-navy"
                   }`}
                 >
-                  {t === "auto" ? "Otomatik" : t === "light" ? "Klè" : "Fonse"}
+                  {t === "light" ? "Klè" : "Fonse"}
                 </button>
               ))}
             </div>

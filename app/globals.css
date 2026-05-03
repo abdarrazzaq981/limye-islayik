@@ -83,18 +83,10 @@
   --foreground: var(--ll-fg);
 }
 
-/* Dark theme — applied when OS prefers dark, or when [data-theme="dark"] is set on <html> */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --ll-bg:        #0F1A2A;
-    --ll-surface:   #1A2740;
-    --ll-surface-2: #14202F;
-    --ll-fg:        #F7F5F0;
-    --ll-fg-muted:  #B5A691;
-    --ll-border:    #2A3F5A;
-  }
-}
-
+/* Dark theme — applied ONLY when the user opts in via Paramèt (data-theme="dark").
+   We intentionally do NOT honor prefers-color-scheme here: the brand is light/ivory
+   by default per docs/limye-islayik-master-prompt.md §17. Users on a dark-mode OS
+   still see the warm light theme until they choose otherwise. */
 :root[data-theme="dark"] {
   --ll-bg:        #0F1A2A;
   --ll-surface:   #1A2740;
@@ -150,12 +142,6 @@ body {
 :root[data-theme="dark"] .bg-white {
   background-color: var(--ll-surface) !important;
   color: var(--ll-fg);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .bg-white {
-    background-color: var(--ll-surface) !important;
-    color: var(--ll-fg);
-  }
 }
 
 /* Honor reduced-motion preferences */

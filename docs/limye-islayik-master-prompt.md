@@ -336,8 +336,10 @@ Always prioritize: recently missed > low-confidence-correct > trap questions > w
 
 ## 17. UI / Design
 
+**Default theme is light/ivory.** Dark mode is an opt-in toggle in `/parametr`, not a `prefers-color-scheme` auto-switch — the brand identity is the warm light theme; users who prefer dark choose it explicitly.
+
 **Palette** (CSS custom properties):
-- `--color-bg` ivory `#F7F5F0` (light) / deep night `#0F1A2A` (dark)
+- `--color-bg` ivory `#F7F5F0` (default) / deep night `#0F1A2A` (when `data-theme="dark"`)
 - `--color-fg` midnight navy `#1B2B4A` / ivory `#F7F5F0`
 - `--color-accent-green` deep emerald `#1F4D3A`
 - `--color-accent-gold` antique gold `#C19A4D`
