@@ -7,24 +7,13 @@ import { WUDU_STEPS } from "@/data/wudu-steps";
 
 export default function WuduPage() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [showPhoto, setShowPhoto] = useState(false);
 
   const step = WUDU_STEPS[currentStep];
   const isFirst = currentStep === 0;
   const isLast = currentStep === WUDU_STEPS.length - 1;
 
-  const goNext = () => {
-    if (!isLast) {
-      setCurrentStep((s) => s + 1);
-      setShowPhoto(false);
-    }
-  };
-  const goPrev = () => {
-    if (!isFirst) {
-      setCurrentStep((s) => s - 1);
-      setShowPhoto(false);
-    }
-  };
+  const goNext = () => { if (!isLast) setCurrentStep((s) => s + 1); };
+  const goPrev = () => { if (!isFirst) setCurrentStep((s) => s - 1); };
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
@@ -49,7 +38,7 @@ export default function WuduPage() {
         {WUDU_STEPS.map((_, idx) => (
           <button
             key={idx}
-            onClick={() => { setCurrentStep(idx); setShowPhoto(false); }}
+            onClick={() => setCurrentStep(idx)}
             className={`flex-1 h-1.5 rounded-full transition-colors ${
               idx < currentStep
                 ? "bg-green"
@@ -94,30 +83,21 @@ export default function WuduPage() {
         <p className="font-serif text-text-secondary text-sm leading-relaxed">{step.poukisa}</p>
       </div>
 
-      {/* Real photo toggle */}
+      {/* Real photo */}
       {step.wikimediaPhoto && (
-        <div className="mb-4">
-          <button
-            onClick={() => setShowPhoto((s) => !s)}
-            className="text-navy font-serif text-sm underline underline-offset-2 hover:text-gold transition-colors"
-          >
-            {showPhoto ? "▲ Kache foto reyèl" : "📷 Wè foto reyèl"}
-          </button>
-          {showPhoto && (
-            <div className="mt-3 rounded-xl overflow-hidden border border-cream-border">
-              <img
-                src={step.wikimediaPhoto}
-                alt={step.title}
-                className="w-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-              <p className="text-[10px] text-text-muted font-serif p-2 text-center">
-                Foto: Wikimedia Commons (Creative Commons)
-              </p>
-            </div>
-          )}
+        <div className="mb-4 rounded-xl overflow-hidden border border-cream-border bg-cream-dark">
+          <img
+            src={step.wikimediaPhoto}
+            alt={step.title}
+            className="w-full object-cover max-h-64"
+            onError={(e) => {
+              const el = e.target as HTMLImageElement;
+              el.parentElement!.style.display = "none";
+            }}
+          />
+          <p className="text-[10px] text-text-muted font-serif p-2 text-center">
+            📷 Foto reyèl · Wikimedia Commons (Creative Commons)
+          </p>
         </div>
       )}
 

@@ -15,7 +15,6 @@ const PRAYER_TIMES = [
 export default function SalatPage() {
   const [view, setView] = useState<"lè" | "etap">("lè");
   const [currentStep, setCurrentStep] = useState(0);
-  const [showPhoto, setShowPhoto] = useState(false);
 
   const step = SALAT_POSITIONS[currentStep];
 
@@ -74,9 +73,24 @@ export default function SalatPage() {
             ))}
           </div>
 
+          {/* Salat positions diagram */}
+          <div className="mt-5 rounded-xl overflow-hidden border border-cream-border bg-cream-dark">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Salat_Positions_and_Prayers_-_transparent_background_-_RGB.jpg"
+              alt="Pozisyon Priyè Islayik"
+              className="w-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).parentElement!.style.display = "none";
+              }}
+            />
+            <p className="text-[10px] text-text-muted font-serif p-2 text-center">
+              📷 Tout pozisyon priyè · Wikimedia Commons (Creative Commons)
+            </p>
+          </div>
+
           <button
             onClick={() => setView("etap")}
-            className="w-full mt-5 bg-navy text-gold font-serif font-bold py-4 rounded-2xl hover:bg-navy-light transition-colors"
+            className="w-full mt-4 bg-navy text-gold font-serif font-bold py-4 rounded-2xl hover:bg-navy-light transition-colors"
           >
             Aprann Kijan Pou Priye →
           </button>
@@ -90,7 +104,7 @@ export default function SalatPage() {
             {SALAT_POSITIONS.map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => { setCurrentStep(idx); setShowPhoto(false); }}
+                onClick={() => setCurrentStep(idx)}
                 className={`flex-1 h-1.5 rounded-full transition-colors ${
                   idx < currentStep ? "bg-green" : idx === currentStep ? "bg-gold" : "bg-cream-border"
                 }`}
@@ -133,7 +147,7 @@ export default function SalatPage() {
           {/* Nav */}
           <div className="flex gap-3">
             <button
-              onClick={() => { setCurrentStep((s) => Math.max(0, s - 1)); setShowPhoto(false); }}
+              onClick={() => setCurrentStep((s) => Math.max(0, s - 1))}
               disabled={currentStep === 0}
               className="flex-1 py-3.5 bg-cream-dark border border-cream-border text-navy font-serif font-bold rounded-2xl disabled:opacity-30"
             >
@@ -148,7 +162,7 @@ export default function SalatPage() {
               </button>
             ) : (
               <button
-                onClick={() => { setCurrentStep((s) => s + 1); setShowPhoto(false); }}
+                onClick={() => setCurrentStep((s) => s + 1)}
                 className="flex-1 py-3.5 bg-navy text-gold font-serif font-bold rounded-2xl hover:bg-navy-light transition-colors"
               >
                 Swivan →
