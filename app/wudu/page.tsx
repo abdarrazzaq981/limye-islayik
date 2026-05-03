@@ -1,15 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { WUDU_STEPS } from "@/data/wudu-steps";
 import { WuduStepIllustration } from "@/components/illustrations/WuduStepIllustration";
 import { Callout } from "@/components/ui/Callout";
 
+// Step-id → photo file in /public/wudu/. Source: Masjid ar-Rahmah (Ottawa) —
+// used with permission. See attribution at the bottom of this page.
+const STEP_PHOTO: Record<number, string> = {
+  1: "/wudu/make-wudu.png",
+  2: "/wudu/wudu-wash-hands.png",
+  3: "/wudu/wudu-rinse-mouth.png",
+  4: "/wudu/wudu-into-nose.png",
+  5: "/wudu/wudu-wash-face.png",
+  6: "/wudu/wudu-wash-arms.png",
+  7: "/wudu/wudu-wash-hair.png",
+  8: "/wudu/wudu-clean-ears.png",
+  9: "/wudu/wudu-wash-feet.png",
+};
+
 export default function WuduPage() {
   const [currentStep, setCurrentStep] = useState(0);
 
   const step = WUDU_STEPS[currentStep];
+  const photo = STEP_PHOTO[step.id];
   const isFirst = currentStep === 0;
   const isLast = currentStep === WUDU_STEPS.length - 1;
 
@@ -53,9 +69,22 @@ export default function WuduPage() {
 
       {/* Main card */}
       <div className="bg-navy rounded-2xl overflow-hidden mb-4">
-        <div className="bg-navy-dark px-6 py-8 flex flex-col items-center text-gold">
-          <WuduStepIllustration stepId={step.id} ariaLabel={step.title} />
-        </div>
+        {photo ? (
+          <div className="relative w-full aspect-[3/2] bg-navy-dark">
+            <Image
+              src={photo}
+              alt={step.title}
+              fill
+              sizes="(max-width: 640px) 100vw, 480px"
+              className="object-cover"
+              priority={currentStep === 0}
+            />
+          </div>
+        ) : (
+          <div className="bg-navy-dark px-6 py-8 flex flex-col items-center text-gold">
+            <WuduStepIllustration stepId={step.id} ariaLabel={step.title} />
+          </div>
+        )}
 
         <div className="p-5">
           <p className="text-gold text-xs font-bold uppercase tracking-wide mb-1">
@@ -79,6 +108,20 @@ export default function WuduPage() {
       <Callout tone="warning" title="Poukisa?" className="mb-4">
         {step.poukisa}
       </Callout>
+
+      {/* Photo attribution */}
+      <p className="text-[10px] text-text-muted font-serif text-center mb-4 leading-relaxed">
+        Foto:{" "}
+        <a
+          href="https://www.mymasjid.ca/beginners-guide-learn-pray-salah/chapter-2/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-navy"
+        >
+          Masjid ar-Rahmah, Ottawa
+        </a>{" "}
+        — itilize avèk pèmisyon.
+      </p>
 
       {/* Navigation */}
       <div className="flex gap-3">
